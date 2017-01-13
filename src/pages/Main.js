@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 
-class Main extends Component {
+var Main = React.createClass({
+    /*getInitialState() {
+        if (!AuthStore.getState().loggedIn) {
+            browserHistory.push('/login');
+        }
+        return {};
+    },*/
     render(){
         return(
             <div>
@@ -25,6 +31,6 @@ class Main extends Component {
             </div>
         );
     }
-}
+});
 
-export default Main
+module.exports = Main;

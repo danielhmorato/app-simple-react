@@ -3,12 +3,6 @@ import DocumentTitle from 'react-document-title';
 import AuthStore from '../stores/AuthStore';
 
 var Escola = React.createClass({
-    getInitialState() {
-        if (!AuthStore.getState().loggedIn) {
-            window.location = '/#/login'
-        }
-        return {};
-    },
     getListEscolas () {
         return require('../dados/escolas.json');
     },

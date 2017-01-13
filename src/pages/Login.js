@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DocumentTitle from 'react-document-title';
-import { Router, Link } from 'react-router';
+import { Router, Link, browserHistory } from 'react-router';
 import Reflux from 'reflux';
 import AuthStore from '../stores/AuthStore';
 import AuthActions from '../actions/AuthActions';
@@ -43,7 +43,7 @@ var Login = React.createClass({
         event.preventDefault();
         AuthActions.logout();
         this._onAuthChange(AuthStore);
-        window.location.href = '#/login';
+        browserHistory.push('/login');
     },
 
     _handleClean(event) {
