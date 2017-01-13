@@ -1,7 +1,14 @@
 import React from 'react';
 import DocumentTitle from 'react-document-title';
+import AuthStore from 'stores/AuthStore';
 
-export default class Home extends React.Component {
+var Home = React.createClass({
+    getInitialState() {
+        if (AuthStore.getState().loggedIn) {
+            window.location = '/#/login'
+        }
+        return { /* initial state */ };
+    },
     render() {
         return (
             <DocumentTitle title="Home">
@@ -9,4 +16,6 @@ export default class Home extends React.Component {
             </DocumentTitle>
         );
     }
-}
+});
+
+module.exports = Home;

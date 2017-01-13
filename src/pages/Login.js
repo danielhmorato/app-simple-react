@@ -1,39 +1,135 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import DocumentTitle from 'react-document-title';
+import { Router, Link } from 'react-router';
+import Reflux from 'reflux';
 
-export default class LoginPage extends React.Component {
+import AuthStore from 'stores/AuthStore';
+import AuthActions from 'actions/AuthActions';
+
+var Login = React.createClass({
+    errorMessage:'',
+    mixins: [
+        Router.State,
+        Router.Navigation,
+        Reflux.connect(AuthStore, 'loginStore'),
+        Reflux.ListenerMixin
+    ],
+
+    componentDidMount () {
+        this.listenTo(AuthStore, this._onAuthChange);
+    },
+
+    _onAuthChange(auth) {
+        this.setState(auth);
+
+        if(this.state.loggedIn){
+            var redirectUrl = this.getQuery().redirect || '/';
+            this.replaceWith(redirectUrl);
+        }
+    },
+
+    _handleSubmit(event) {
+        event.preventDefault();
+
+        AuthActions.login(
+            ReactDOM.findDOMNode(this.refs.username).value,
+            ReactDOM.findDOMNode(this.refs.password).value
+        );
+    },
+
+    _handleLogOut(event) {
+        AuthActions.logout();
+        this.transitionTo('/login');
+    },
+
+    _handleHome(event) {
+        this.transitionTo('/');
+    },
+
+    _handleClean(event) {
+        event.preventDefault();
+        ReactDOM.findDOMNode(this.refs.username).value = "";
+        ReactDOM.findDOMNode(this.refs.password).value = "";
+
+    },
+
     render() {
-        return (
-            <DocumentTitle title="Autenticação">
-                <div className="login">
-                    <div id="login-box">
-                        <div className="panel">
-                            <div className="panel-header">
-                                Login Form
-                                <a className="limpar-form-login" href="#">
-                                    <i className="limpar-form-login glyphicon glyphicon-remove"></i>
-                                </a>
-                            </div>
-                            <div className="panel-body">
-                                <form role="form">
-                                    <div className="form-group has-feedback">
-                                        <label className="control-label sr-only">Username</label>
-                                        <input type="text" className="form-control input-lg" placeholder="Username" />
-                                        <i className="form-control-feedback glyphicon glyphicon-user"></i>
+        if (this.state.error) {
+            this.errorMessage = (
+                <div className='state-error' style={{ paddingBottom: 16 }}>
+                    { this.state.error }
+                </div>
+            );
+        }
+
+        var formContent;
+        if (this.state.user) {
+            formContent = (
+                <DocumentTitle title="Autenticação">
+                    <div className="login">
+                        <div id="login-box">
+                            <div className="panel">
+                                <div className="panel-header">
+                                    Login Form
+                                    <a className="limpar-form-login" onClick={ this._handleLogOut }>
+                                        <i className="limpar-form-login glyphicon glyphicon-remove" style={{'cursor':'pointer'}}></i>
+                                    </a>
+                                </div>
+                                    <div>
+                                        <p>
+                                            You're logged in as <strong>{ this.state.user.name }</strong>.
+                                        </p>
+                                        <p>
+                                            <button className="btn btn-zup" onClick={ this._handleHome }>Go</button>
+                                        </p>
                                     </div>
-                                    <div className="form-group has-feedback">
-                                        <label className="control-label sr-only">Username</label>
-                                        <input type="password" className="form-control input-lg" placeholder="Password" />
-                                        <i className="form-control-feedback glyphicon glyphicon-lock"></i>
-                                    </div>
-                                    <button className="btn btn-zup" href="#">Sign In</button>
-                                    <a href="#" className="link-lost-pass">Lost Your Password?</a>
-                                </form>
+                                </div>
+                        </div>
+                    </div>
+                </DocumentTitle>
+            );
+        } else {
+            formContent = (
+                <DocumentTitle title="Autenticação">
+                    <div className="login">
+                        <div id="login-box">
+                            <div className="panel">
+                                <div className="panel-header">
+                                    Login Form
+                                    <a className="limpar-form-login" onClick={ this._handleClean } >
+                                        <i className="limpar-form-login glyphicon glyphicon-remove" style={{'cursor':'pointer'}}></i>
+                                    </a>
+                                </div>
+                                <div className="panel-body">
+                                    <form role="form">
+                                        <div className="form-group has-feedback">
+                                            <label className="control-label sr-only">Username</label>
+                                            <input type="text" className="form-control input-lg" placeholder="Username" ref="username" />
+                                            <i className="form-control-feedback glyphicon glyphicon-user"></i>
+                                        </div>
+                                        <div className="form-group has-feedback">
+                                            <label className="control-label sr-only">Username</label>
+                                            <input type="password" className="form-control input-lg" placeholder="Password" ref="password" />
+                                            <i className="form-control-feedback glyphicon glyphicon-lock"></i>
+                                        </div>
+                                        <button className="btn btn-zup" onClick={ this.handleLogout }>Sign In</button>
+                                        <a href="#" className="link-lost-pass">Lost Your Password?</a>
+                                        <div>{ this.errorMessage }</div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </DocumentTitle>
+                </DocumentTitle>
+            );
+        }
+        return (
+            <form onSubmit={this._handleSubmit}>
+                { formContent }
+            </form>
         );
     }
-};
+});
+
+module.exports = Login;
