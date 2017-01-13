@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom';
 import DocumentTitle from 'react-document-title';
 import { Router, Link } from 'react-router';
 import Reflux from 'reflux';
-
-import AuthStore from 'stores/AuthStore';
-import AuthActions from 'actions/AuthActions';
+import AuthStore from '../stores/AuthStore';
+import AuthActions from '../actions/AuthActions';
 
 var Login = React.createClass({
     errorMessage:'',
@@ -36,15 +35,15 @@ var Login = React.createClass({
             ReactDOM.findDOMNode(this.refs.username).value,
             ReactDOM.findDOMNode(this.refs.password).value
         );
+
+        this._onAuthChange(AuthStore);
     },
 
     _handleLogOut(event) {
+        event.preventDefault();
         AuthActions.logout();
-        this.transitionTo('/login');
-    },
-
-    _handleHome(event) {
-        this.transitionTo('/');
+        this._onAuthChange(AuthStore);
+        window.location.href = '#/login';
     },
 
     _handleClean(event) {
@@ -52,6 +51,14 @@ var Login = React.createClass({
         ReactDOM.findDOMNode(this.refs.username).value = "";
         ReactDOM.findDOMNode(this.refs.password).value = "";
 
+    },
+
+    _recuperarUsuario () {
+        var dados;
+        if (AuthStore.loginStore && AuthStore.loginStore != "") {
+            dados = JSON.parse(atob(AuthStore.loginStore.split('.')[1]));
+        }
+        return dados;
     },
 
     render() {
@@ -62,7 +69,7 @@ var Login = React.createClass({
                 </div>
             );
         }
-
+        this.state.user = this._recuperarUsuario();
         var formContent;
         if (this.state.user) {
             formContent = (
@@ -78,10 +85,10 @@ var Login = React.createClass({
                                 </div>
                                     <div>
                                         <p>
-                                            You're logged in as <strong>{ this.state.user.name }</strong>.
+                                            You're logged in as <strong>{ this._recuperarUsuario().name }</strong>.
                                         </p>
                                         <p>
-                                            <button className="btn btn-zup" onClick={ this._handleHome }>Go</button>
+                                            <Link onlyActiveOnIndex={true} to="/">Go</Link>
                                         </p>
                                     </div>
                                 </div>
@@ -113,7 +120,7 @@ var Login = React.createClass({
                                             <input type="password" className="form-control input-lg" placeholder="Password" ref="password" />
                                             <i className="form-control-feedback glyphicon glyphicon-lock"></i>
                                         </div>
-                                        <button className="btn btn-zup" onClick={ this.handleLogout }>Sign In</button>
+                                        <button className="btn btn-zup" onClick={ this.submit }>Sign In</button>
                                         <a href="#" className="link-lost-pass">Lost Your Password?</a>
                                         <div>{ this.errorMessage }</div>
                                     </form>
