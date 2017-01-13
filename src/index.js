@@ -5,9 +5,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route } from 'react-router';
 
-import {Home} from './pages/Home';
-import {Login} from './pages/Login';
-import {LoginRequired} from './util/RouteHelpers'
+import Home from './pages/Home';
+import Login from './pages/Login';
 
 ReactDOM.render((
     <Router>
