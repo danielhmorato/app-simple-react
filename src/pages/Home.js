@@ -5,7 +5,7 @@ var Home = React.createClass({
     render() {
         return (
             <DocumentTitle title="Página inicial">
-                <h1>Home</h1>
+                <h1>Seja Bem Vindo!</h1>
             </DocumentTitle>
         );
     }

@@ -2,31 +2,11 @@ import React from 'react';
 import { Router, Link, browserHistory } from 'react-router';
 import Reflux from 'reflux';
 import AuthActions from 'actions/AuthActions';
-import AuthStore from '../stores/AuthStore';
 
-var Main = React.createClass({
+var MenuNav = React.createClass({
     contextTypes: {
         router: React.PropTypes.object
     },
-    errorMessage:'',
-    mixins: [
-        Router.State,
-        Router.Navigation,
-        Reflux.connect(AuthStore, 'loginStore'),
-        Reflux.ListenerMixin
-    ],
-
-    componentDidMount () {
-        this.listenTo(AuthStore, this._onAuthChange);
-    },
-
-    _onAuthChange(auth) {
-        this.setState(auth);
-        if(!this.state.loggedIn){
-            this.context.router.push('/login');
-        }
-    },
-
     handleLogout(e) {
         e.preventDefault();
         AuthActions.logout();
@@ -35,7 +15,6 @@ var Main = React.createClass({
             _self.context.router.push('/login');
         }, 200);
     },
-
     render(){
         return(
             <div>
@@ -62,4 +41,4 @@ var Main = React.createClass({
     }
 });
 
-module.exports = Main;
+module.exports = MenuNav;

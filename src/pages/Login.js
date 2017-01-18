@@ -137,20 +137,4 @@ var Login = React.createClass({
     }
 });
 
-var LoginRequired = React.createClass({
-    statics: {
-        willTransitionTo: function (transition, params, query, callback) {
-            if(!AuthStore.loggedIn()){
-                this.props.history.pushState(null, '/#/login');
-            }
-            callback();
-        }
-    },
-    render () {
-        return (
-            <Router.RouteHandler/>
-        );
-    }
-});
-
-module.exports = { Login, LoginRequired };
+module.exports = Login;
