@@ -1,9 +1,11 @@
 import Reflux from 'reflux';
 import Actions from 'actions/AuthActions';
+import { Router, Link, hashHistory } from 'react-router';
 
 var renderTimeout = 250; // set a timeout to simulate async response time
 
 var AuthStore = Reflux.createStore({
+
   listenables: Actions,
 
   init () {
@@ -55,7 +57,6 @@ var AuthStore = Reflux.createStore({
       this.loginStore = authResponse.loginStore;
       this.claims = this.parseLoginStore();
       this.error = false;
-
       localStorage.setItem('loginStore', this.loginStore);
     } else {
       this.error = 'Username or password invalid.';

@@ -7,6 +7,9 @@ import AuthStore from '../stores/AuthStore';
 import AuthActions from '../actions/AuthActions';
 
 var Login = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.object
+    },
     errorMessage:'',
     mixins: [
         Router.State,
@@ -21,10 +24,8 @@ var Login = React.createClass({
 
     _onAuthChange(auth) {
         this.setState(auth);
-
         if(this.state.loggedIn){
-            var redirectUrl = this.getQuery().redirect || '/';
-            this.replaceWith(redirectUrl);
+            this.context.router.push('/');
         }
     },
 
@@ -35,22 +36,19 @@ var Login = React.createClass({
             ReactDOM.findDOMNode(this.refs.username).value,
             ReactDOM.findDOMNode(this.refs.password).value
         );
-
         this._onAuthChange(AuthStore);
     },
 
     _handleLogOut(event) {
         event.preventDefault();
         AuthActions.logout();
-        this._onAuthChange(AuthStore);
-        browserHistory.push('/login');
+        this.context.router.push('/login');
     },
 
     _handleClean(event) {
         event.preventDefault();
         ReactDOM.findDOMNode(this.refs.username).value = "";
         ReactDOM.findDOMNode(this.refs.password).value = "";
-
     },
 
     _recuperarUsuario () {
@@ -139,4 +137,20 @@ var Login = React.createClass({
     }
 });
 
-module.exports = Login;
+var LoginRequired = React.createClass({
+    statics: {
+        willTransitionTo: function (transition, params, query, callback) {
+            if(!AuthStore.loggedIn()){
+                this.props.history.pushState(null, '/#/login');
+            }
+            callback();
+        }
+    },
+    render () {
+        return (
+            <Router.RouteHandler/>
+        );
+    }
+});
+
+module.exports = { Login, LoginRequired };

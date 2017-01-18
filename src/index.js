@@ -9,16 +9,20 @@ import Main from './pages/Main';
 import Home from './pages/Home';
 import Escola from './pages/Escola';
 import About from './pages/About';
-import Login from './pages/Login';
+import {Login, LoginRequired} from './pages/Login';
 
 ReactDOM.render((
     <Router>
-        <Route path="/" component={Main} history={browserHistory} >
-            <IndexRoute component={Home} />
-            <Route path="/escola" component={Escola} />
-            <Route path="/about" component={About} />
+        <Route history={browserHistory}>
+            <Route handler={LoginRequired}>
+                <Route path="/" component={Main}>
+                    <IndexRoute component={Home} />
+                    <Route path="/escola" component={Escola} />
+                    <Route path="/about" component={About} />
+                </Route>
+            </Route>
+            <Route path="/login" component={Login} />
         </Route>
-        <Route path="/login" component={Login} />
     </Router>
 ), document.getElementById('app'));
 
